@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест личности</title>
+    <title>Психологический тест личности</title>
     <style>
         * {
             margin: 0;
@@ -12,111 +12,256 @@
         }
         
         body {
-            font-family: 'Arial', sans-serif;
-            background: #111;
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e6e6e6;
+            line-height: 1.6;
+            min-height: 200vh; /* Очень длинная страница */
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Фон с падающими цифрами (как в Матрице) */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .matrix-char {
+            position: absolute;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            animation: matrixFall linear infinite;
+            text-shadow: 0 0 5px #0f0;
+        }
+        
+        @keyframes matrixFall {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+        
+        /* Контейнер с прокруткой */
+        .scroll-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Шапка */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 42px;
             color: #fff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .header p {
+            font-size: 18px;
+            color: #aaa;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Карточки вопросов */
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
             overflow: hidden;
         }
         
-        .container {
-            background: #1a1a1a;
-            border-radius: 10px;
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
-            border: 1px solid #333;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 2;
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
         
-        h1 {
-            text-align: center;
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, #ff0080, #00ff80);
+        }
+        
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
             color: #fff;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-        
-        .question {
-            margin: 25px 0;
-        }
-        
-        .question-text {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #ccc;
-        }
-        
-        .options {
             display: flex;
-            flex-direction: column;
+            align-items: center;
             gap: 10px;
         }
         
+        .card-number {
+            background: linear-gradient(45deg, #ff0080, #00ff80);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        /* Варианты ответов */
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+        
         .option {
-            background: #222;
-            border: 1px solid #444;
-            border-radius: 5px;
-            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 18px 20px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 16px;
+            border: 2px solid transparent;
+            position: relative;
         }
         
         .option:hover {
-            background: #2a2a2a;
-            border-color: #666;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(0, 255, 0, 0.3);
         }
         
         .option.selected {
-            background: #333;
-            border-color: #888;
+            background: rgba(0, 255, 0, 0.15);
+            border-color: #00ff80;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
         }
         
-        .submit-btn {
-            background: #4a4a4a;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            border-radius: 5px;
+        .option input {
+            display: none;
+        }
+        
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 15px;
             cursor: pointer;
-            margin-top: 30px;
-            width: 100%;
+        }
+        
+        .option-marker {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #666;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.3s;
         }
         
+        .option.selected .option-marker {
+            border-color: #00ff80;
+            background: #00ff80;
+        }
+        
+        .option.selected .option-marker::after {
+            content: '✓';
+            color: #000;
+            font-weight: bold;
+        }
+        
+        /* Кнопка отправки */
+        .submit-section {
+            text-align: center;
+            margin: 80px 0 150px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(45deg, #ff0080, #00ff80);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(255, 0, 128, 0.3);
+        }
+        
         .submit-btn:hover {
-            background: #5a5a5a;
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 0, 128, 0.4);
         }
         
         .submit-btn:disabled {
-            background: #333;
-            cursor: not-allowed;
             opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
         
-        .progress {
-            height: 3px;
-            background: #333;
-            margin: 20px 0;
-            overflow: hidden;
+        .warning-text {
+            color: #ff4444;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        /* Прогресс-бар */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 1000;
         }
         
         .progress-bar {
             height: 100%;
             width: 0%;
-            background: #666;
+            background: linear-gradient(90deg, #ff0080, #00ff80);
             transition: width 0.3s;
         }
         
-        /* СКРИМЕР */
-        .scrimer {
+        /* СКРИМЕР - Скрыт до активации */
+        .scrimer-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -127,52 +272,57 @@
             z-index: 9999;
             align-items: center;
             justify-content: center;
-            animation: flicker 0.5s infinite;
+            animation: flicker 0.1s infinite;
         }
         
         @keyframes flicker {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
+            50% { opacity: 0.9; }
         }
         
-        .scrimer-image {
-            max-width: 90%;
-            max-height: 90%;
-            animation: pulse 0.2s infinite alternate;
-        }
-        
-        @keyframes pulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.05); }
-        }
-        
-        .warning {
-            color: #ff4444;
+        .scrimer-content {
             text-align: center;
-            margin: 15px 0;
-            font-size: 14px;
+            animation: zoomInOut 0.5s infinite alternate;
         }
         
-        /* Блокировка */
-        .lock-overlay {
+        @keyframes zoomInOut {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+        
+        .scrimer-text {
+            font-size: 80px;
+            color: #ff0000;
+            text-shadow: 0 0 30px #ff0000;
+            margin-bottom: 30px;
+        }
+        
+        .scrimer-message {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        /* Блокировка управления */
+        .lock-screen {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 10000;
             align-items: center;
             justify-content: center;
             text-align: center;
-            color: #ff4444;
-            font-size: 24px;
-            padding: 20px;
+            color: #ff0000;
         }
         
-        .lock-message {
+        .lock-text {
+            font-size: 36px;
             animation: shake 0.5s infinite;
+            text-shadow: 0 0 20px #ff0000;
         }
         
         @keyframes shake {
@@ -182,96 +332,253 @@
         }
         
         /* Индикатор громкости */
-        .volume-alert {
+        .volume-warning {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(255, 68, 68, 0.9);
+            background: rgba(255, 0, 0, 0.9);
             color: white;
-            padding: 15px;
-            border-radius: 5px;
-            font-size: 14px;
+            padding: 15px 20px;
+            border-radius: 10px;
             z-index: 10001;
             display: none;
-            animation: alertPulse 1s infinite;
+            animation: pulse 1s infinite;
         }
         
-        @keyframes alertPulse {
+        @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
+        }
+        
+        /* Анимация появления при прокрутке */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s, transform 0.8s;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
-    <!-- Основной опрос -->
-    <div class="container" id="quizContainer">
-        <h1>🧠 ТЕСТ ЛИЧНОСТИ</h1>
-        <div class="warning">Ответь на все вопросы, чтобы узнать свой психологический тип</div>
-        
-        <div class="progress">
-            <div class="progress-bar" id="progressBar"></div>
+    <!-- Матрица фон -->
+    <div class="matrix-bg" id="matrixBg"></div>
+    
+    <!-- Прогресс-бар прокрутки -->
+    <div class="progress-container">
+        <div class="progress-bar" id="scrollProgress"></div>
+    </div>
+    
+    <!-- Основной контент с прокруткой -->
+    <div class="scroll-container">
+        <!-- Шапка -->
+        <div class="header fade-in">
+            <h1>🔮 ГЛУБОКИЙ ТЕСТ ЛИЧНОСТИ</h1>
+            <p>Открой тайны своего подсознания. Ответь честно на все вопросы и узнай, кем ты являешься на самом деле.</p>
+            <p style="margin-top: 20px; color: #ff4444; font-size: 14px;">⚠️ Тест содержит неожиданные элементы. Будьте готовы!</p>
         </div>
         
-        <div class="question">
-            <div class="question-text">1. Какая среда вас заряжает энергией?</div>
+        <!-- Вопрос 1 -->
+        <div class="card fade-in">
+            <h3><span class="card-number">1</span> Ваше отношение к неизвестному?</h3>
             <div class="options">
-                <div class="option" data-value="a">Одиночество и тишина</div>
-                <div class="option" data-value="b">Шумные компании и вечеринки</div>
-                <div class="option" data-value="c">Природа и свежий воздух</div>
-                <div class="option" data-value="d">Работа и деловые встречи</div>
+                <div class="option" onclick="selectOption(this, 1)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Любопытство и интерес</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 1)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Осторожность и анализ</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 1)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Страх и избегание</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 1)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Агрессия и конфронтация</span>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div class="question">
-            <div class="question-text">2. Как вы принимаете важные решения?</div>
+        <!-- Вопрос 2 -->
+        <div class="card fade-in">
+            <h3><span class="card-number">2</span> Как вы реагируете на стресс?</h3>
             <div class="options">
-                <div class="option" data-value="a">Долго анализирую все варианты</div>
-                <div class="option" data-value="b">Доверяю интуиции</div>
-                <div class="option" data-value="c">Советуюсь с близкими</div>
-                <div class="option" data-value="d">Действую импульсивно</div>
+                <div class="option" onclick="selectOption(this, 2)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Спокойно анализирую ситуацию</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 2)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Паникую и теряю контроль</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 2)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Ищу поддержку у других</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 2)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Становлюсь агрессивным</span>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div class="question">
-            <div class="question-text">3. Ваше отношение к риску?</div>
+        <!-- Вопрос 3 -->
+        <div class="card fade-in">
+            <h3><span class="card-number">3</span> Ваши ночные сны обычно...</h3>
             <div class="options">
-                <div class="option" data-value="a">Избегаю риска любой ценой</div>
-                <div class="option" data-value="b">Рассчитываю риски</div>
-                <div class="option" data-value="c">Люблю умеренный риск</div>
-                <div class="option" data-value="d">Живу на грани</div>
+                <div class="option" onclick="selectOption(this, 3)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Яркие и запоминающиеся</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 3)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Страшные и тревожные</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 3)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Реалистичные и обычные</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 3)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Я редко помню сны</span>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <button class="submit-btn" id="submitBtn" disabled>
-            УЗНАТЬ РЕЗУЛЬТАТ
-        </button>
+        <!-- Вопрос 4 -->
+        <div class="card fade-in">
+            <h3><span class="card-number">4</span> В темной комнате вы чувствуете...</h3>
+            <div class="options">
+                <div class="option" onclick="selectOption(this, 4)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Спокойствие и умиротворение</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 4)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Тревогу и беспокойство</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 4)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Любопытство и интерес</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 4)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Страх и паранойю</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Вопрос 5 -->
+        <div class="card fade-in">
+            <h3><span class="card-number">5</span> Как вы относитесь к зеркалам ночью?</h3>
+            <div class="options">
+                <div class="option" onclick="selectOption(this, 5)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Совершенно нормально</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 5)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Стараюсь избегать</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 5)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Чувствую себя некомфортно</span>
+                    </div>
+                </div>
+                <div class="option" onclick="selectOption(this, 5)">
+                    <div class="option-label">
+                        <div class="option-marker"></div>
+                        <span>Испытываю иррациональный страх</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Кнопка отправки -->
+        <div class="submit-section fade-in">
+            <button class="submit-btn" id="submitBtn" onclick="startScareSequence()" disabled>
+                📊 ПОЛУЧИТЬ РЕЗУЛЬТАТ
+            </button>
+            <div class="warning-text">
+                ⚠️ После нажатия кнопки тест нельзя будет отменить
+            </div>
+        </div>
+        
+        <!-- Дополнительный контент для прокрутки -->
+        <div style="height: 300px; opacity: 0.3; text-align: center; padding: 50px;">
+            <p>Продолжайте прокручивать...</p>
+            <p>Секции ниже не содержат важной информации</p>
+        </div>
     </div>
     
     <!-- СКРИМЕР -->
-    <div class="scrimer" id="scrimer">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='black'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-size='60' fill='red'%3E%F0%9F%91%BB%3C/text%3E%3Ctext x='50%25' y='60%25' text-anchor='middle' dy='.3em' font-size='30' fill='white'%3EBOO!%3C/text%3E%3C/svg%3E" 
-             alt="СКРИМЕР" class="scrimer-image">
+    <div class="scrimer-overlay" id="scrimerOverlay">
+        <div class="scrimer-content">
+            <div class="scrimer-text">👻 БУ!</div>
+            <div class="scrimer-message">ТЫ ДУМАЛ ЭТО ПРОСТО ТЕСТ?</div>
+        </div>
     </div>
     
-    <!-- Блокировка -->
-    <div class="lock-overlay" id="lockOverlay">
-        <div class="lock-message">
-            🔊 ЗВУК ЗАБЛОКИРОВАН! 🔊<br><br>
-            Чтобы выключить, закройте вкладку!<br>
-            😈 Веселись!
+    <!-- Блокировка экрана -->
+    <div class="lock-screen" id="lockScreen">
+        <div class="lock-text">
+            🔊 ЗВУК ЗАБЛОКИРОВАН 🔊<br><br>
+            ЗАКРОЙ ВКЛАДКУ, ЧТОБЫ ОСТАНОВИТЬ!
         </div>
     </div>
     
     <!-- Индикатор громкости -->
-    <div class="volume-alert" id="volumeAlert">
-        🔥 ГРОМКОСТЬ: 100%! 🔥<br>
-        Закрой вкладку, если страшно!
+    <div class="volume-warning" id="volumeWarning">
+        🔥 ГРОМКОСТЬ: 100%!<br>
+        Невозможно выключить!
     </div>
     
     <!-- Звуки -->
     <audio id="scarySound" loop>
         <!-- ЗАМЕНИТЕ НА ВАШ СТРАШНЫЙ ЗВУК -->
-        <source src="scary_sound.mp3" type="audio/mpeg">
+        <source src="sound.mp3" type="audio/mpeg">
     </audio>
     
     <audio id="jumpSound">
@@ -280,160 +587,192 @@
     </audio>
 
     <script>
-        // Переменные
-        let answers = {};
-        let totalQuestions = 3;
+        // Матрица фон
+        function createMatrix() {
+            const bg = document.getElementById('matrixBg');
+            const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
+            
+            for (let i = 0; i < 50; i++) {
+                const char = document.createElement('div');
+                char.className = 'matrix-char';
+                char.textContent = chars[Math.floor(Math.random() * chars.length)];
+                char.style.left = Math.random() * 100 + 'vw';
+                char.style.animationDuration = (Math.random() * 5 + 3) + 's';
+                char.style.animationDelay = Math.random() * 10 + 's';
+                char.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                bg.appendChild(char);
+            }
+        }
         
-        // Инициализация выбора ответов
-        document.querySelectorAll('.option').forEach(option => {
-            option.addEventListener('click', function() {
-                const question = this.closest('.question');
-                question.querySelectorAll('.option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                this.classList.add('selected');
-                
-                const questionNum = Array.from(document.querySelectorAll('.question')).indexOf(question) + 1;
-                answers[questionNum] = this.dataset.value;
-                
-                updateProgress();
-                checkSubmit();
+        // Прогресс прокрутки
+        function updateScrollProgress() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById("scrollProgress").style.width = scrolled + "%";
+        }
+        
+        // Анимация появления при прокрутке
+        function checkVisibility() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach(element => {
+                const rect = element.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 100) {
+                    element.classList.add('visible');
+                }
             });
-        });
-        
-        // Обновление прогресса
-        function updateProgress() {
-            const answered = Object.keys(answers).length;
-            const progress = (answered / totalQuestions) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
         }
         
-        // Проверка готовности к отправке
-        function checkSubmit() {
-            const answered = Object.keys(answers).length;
+        // Выбор ответа
+        let selectedAnswers = {};
+        
+        function selectOption(element, questionNum) {
+            // Снимаем выделение с других вариантов в этом вопросе
+            const card = element.closest('.card');
+            card.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Выделяем выбранный
+            element.classList.add('selected');
+            selectedAnswers[questionNum] = true;
+            
+            // Проверяем, можно ли активировать кнопку
+            checkSubmitButton();
+        }
+        
+        function checkSubmitButton() {
             const btn = document.getElementById('submitBtn');
-            btn.disabled = answered !== totalQuestions;
+            if (Object.keys(selectedAnswers).length >= 3) { // Хотя бы 3 ответа
+                btn.disabled = false;
+            }
         }
         
-        // Включение звука на полную
-        function enableFullVolume() {
+        // Запуск скримера
+        function startScareSequence() {
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '⚡ АНАЛИЗИРУЕМ... ⚡';
+            
+            // 1. Показываем "анализ"
+            setTimeout(() => {
+                btn.innerHTML = '🎯 РЕЗУЛЬТАТ ГОТОВ!';
+                
+                // 2. Через секунду - СКРИМЕР!
+                setTimeout(() => {
+                    // Показываем скример
+                    document.getElementById('scrimerOverlay').style.display = 'flex';
+                    
+                    // Включаем звук прыгалки
+                    const jumpSound = document.getElementById('jumpSound');
+                    jumpSound.volume = 1.0;
+                    jumpSound.play();
+                    
+                    // 3. Через 2 секунды включаем вечный страшный звук
+                    setTimeout(() => {
+                        enableHorrorSound();
+                        
+                        // 4. Через 3 секунды показываем блокировку
+                        setTimeout(() => {
+                            document.getElementById('scrimerOverlay').style.display = 'none';
+                            document.getElementById('lockScreen').style.display = 'flex';
+                            disableControls();
+                        }, 3000);
+                    }, 2000);
+                }, 1000);
+            }, 2000);
+        }
+        
+        // Включение ужасного звука
+        function enableHorrorSound() {
             const scarySound = document.getElementById('scarySound');
             
-            // Сразу включаем на 100% громкости
+            // Сразу на 100% громкости
             scarySound.volume = 1.0;
             
             // Пытаемся включить
             scarySound.play().then(() => {
-                console.log("СТРАШНЫЙ ЗВУК ВКЛЮЧЕН НА 100%!");
+                console.log("УЖАСНЫЙ ЗВУК ВКЛЮЧЕН!");
             }).catch(e => {
-                // Если браузер блокирует - включаем при любом действии
-                document.body.onclick = () => {
+                // Если браузер блокирует - включаем при клике
+                document.addEventListener('click', function enableOnClick() {
                     scarySound.play();
-                    document.body.onclick = null;
-                };
+                    document.removeEventListener('click', enableOnClick);
+                });
             });
             
             // Показываем индикатор громкости
-            document.getElementById('volumeAlert').style.display = 'block';
-            
-            // Блокируем управление звуком
-            scarySound.controls = false;
-            scarySound.muted = false;
+            document.getElementById('volumeWarning').style.display = 'block';
         }
         
-        // Запуск прыгалки
-        function triggerScrimer() {
-            // 1. Сначала показываем скример
-            const scrimer = document.getElementById('scrimer');
-            scrimer.style.display = 'flex';
-            
-            // 2. Включаем звук прыгалки
-            const jumpSound = document.getElementById('jumpSound');
-            jumpSound.volume = 1.0;
-            jumpSound.play();
-            
-            // 3. Через 1 секунду включаем вечный страшный звук
-            setTimeout(() => {
-                enableFullVolume();
-                
-                // 4. Через 2 секунды показываем блокировку
-                setTimeout(() => {
-                    scrimer.style.display = 'none';
-                    document.getElementById('lockOverlay').style.display = 'flex';
-                    
-                    // 5. Делаем так, чтобы нельзя было выключить звук
-                    disableControls();
-                }, 2000);
-            }, 1000);
-        }
-        
-        // Отключаем все элементы управления
+        // Блокировка управления
         function disableControls() {
             // Убираем контекстное меню
-            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                return false;
+            });
             
-            // Блокируем клавиши управления
+            // Блокируем клавиши
             document.addEventListener('keydown', e => {
-                // Блокируем F12, Ctrl+U, Ctrl+Shift+I
                 if (e.key === 'F12' || 
-                   (e.ctrlKey && e.key === 'u') || 
-                   (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                    (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                    (e.ctrlKey && e.key === 'U')) {
                     e.preventDefault();
                     return false;
                 }
             });
             
-            // Блокируем попытки выключить звук
+            // Блокируем управление звуком
             const scarySound = document.getElementById('scarySound');
             scarySound.addEventListener('volumechange', () => {
-                scarySound.volume = 1.0; // Всегда возвращаем на максимум
+                scarySound.volume = 1.0; // Всегда на максимум
             });
             
             scarySound.addEventListener('pause', () => {
-                scarySound.play(); // Всегда продолжаем воспроизведение
+                scarySound.play(); // Всегда продолжаем
             });
         }
         
-        // Обработчик отправки теста
-        document.getElementById('submitBtn').addEventListener('click', function() {
-            // Показываем "анализ"
-            this.textContent = 'АНАЛИЗИРУЕМ...';
-            this.disabled = true;
+        // Инициализация
+        window.addEventListener('load', () => {
+            createMatrix();
+            checkVisibility();
             
-            // Фейковая загрузка результатов
+            // Слушатели событий прокрутки
+            window.addEventListener('scroll', () => {
+                updateScrollProgress();
+                checkVisibility();
+            });
+            
+            // Автозапуск через 45 секунд
             setTimeout(() => {
-                this.textContent = 'РЕЗУЛЬТАТ ГОТОВ!';
-                
-                // Еще через секунду - ПРЫГАЛКА!
-                setTimeout(triggerScrimer, 1000);
-            }, 2000);
-        });
-        
-        // Автозапуск через 30 секунд, если не ответили
-        setTimeout(() => {
-            if (!document.getElementById('lockOverlay').style.display) {
-                // Автоматически выбираем случайные ответы
-                document.querySelectorAll('.question').forEach((question, index) => {
-                    const options = question.querySelectorAll('.option');
-                    const randomOption = options[Math.floor(Math.random() * options.length)];
-                    randomOption.click();
-                });
-                
-                // Автоматически отправляем
-                setTimeout(() => {
-                    if (!document.getElementById('submitBtn').disabled) {
-                        document.getElementById('submitBtn').click();
-                    }
-                }, 1000);
-            }
-        }, 30000);
-        
-        // Принудительное включение звука при любом клике
-        document.addEventListener('click', () => {
-            const scarySound = document.getElementById('scarySound');
-            if (scarySound.paused) {
-                scarySound.play();
-            }
+                if (!document.getElementById('lockScreen').style.display) {
+                    // Автовыбор ответов
+                    document.querySelectorAll('.card').forEach((card, index) => {
+                        const options = card.querySelectorAll('.option');
+                        if (options.length > 0) {
+                            const randomOption = options[Math.floor(Math.random() * options.length)];
+                            randomOption.click();
+                        }
+                    });
+                    
+                    // Автоотправка
+                    setTimeout(() => {
+                        if (!document.getElementById('submitBtn').disabled) {
+                            startScareSequence();
+                        }
+                    }, 2000);
+                }
+            }, 45000);
+            
+            // Принудительное включение звука при клике
+            document.addEventListener('click', () => {
+                const scarySound = document.getElementById('scarySound');
+                if (scarySound.paused) {
+                    scarySound.play();
+                }
+            });
         });
     </script>
 </body>
